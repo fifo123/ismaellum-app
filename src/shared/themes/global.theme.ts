@@ -1,32 +1,33 @@
 import { createTheme } from '@material-ui/core';
+import theme from './theme';
 
 export const MaterialGlobal = createTheme({
   typography: {
     h3: {
-      fontSize: '24px'
+      fontSize: theme.font.sizes.large
     },
     h4: {
-      fontSize: '20px'
+      fontSize: theme.font.sizes.medium
     },
     h5: {
-      fontSize: '18px'
+      fontSize: theme.font.sizes.normal
     },
     h6: {
-      fontSize: '14px'
+      fontSize: theme.font.sizes.small
     }
   },
   palette: {
     primary: {
-      main: 'rgba(4, 191, 191, 0.5)'
+      main: theme.colors.primary
     },
     secondary: {
-      main: '#04BFBF'
+      main: theme.colors.secondary
     }
   },
   overrides: {
     MuiButton: {
       containedPrimary: {
-        color: 'white'
+        color: theme.colors.white
       }
     }
   }

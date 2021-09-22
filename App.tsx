@@ -9,7 +9,7 @@ import { MuiThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
 import { Routes } from './src/routes';
-import { MaterialGlobal } from './src/shared/global.theme';
+import { MaterialGlobal } from './src/shared/themes/global.theme';
 import GlobalStyles from './src/styles/GlobalStyles';
 import 'react-toastify/dist/ReactToastify.css';
 
