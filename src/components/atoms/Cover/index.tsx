@@ -5,12 +5,14 @@ import { Cover, Typography } from './styles';
 
 interface CoverProps {
   creditsQuantity?: number;
+  xpQuantity?: number;
   hidden?: boolean;
   setHidden: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function UiCover({
   creditsQuantity = 0,
+  xpQuantity = 0,
   hidden = true,
   setHidden
 }: CoverProps) {
@@ -37,6 +39,14 @@ export function UiCover({
         style={{ fontWeight: 'bold', margin: '10px' }}
       >
         +{creditsQuantity} créditos
+      </Typography>
+      <Typography
+        variant="h3"
+        color="secondary"
+        align="center"
+        style={{ fontWeight: 'bold', margin: '10px' }}
+      >
+        +{xpQuantity} xp
       </Typography>
     </Cover>
   );
