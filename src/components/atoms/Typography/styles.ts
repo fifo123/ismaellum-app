@@ -9,7 +9,7 @@ export type TypographyProps = {
 };
 
 export const Typography = styled(Typo)<TypographyProps>`
-  color: ${(props) => props.fontColor};
-  font-weight: ${(props) => props.fontWeight};
-  font-size: ${(props) => props.fontSize};
+  color: ${(props) => theme.colors[props.fontColor || 'primary']};
+  font-weight: ${(props) => theme.font.weight[props.fontWeight || 'normal']};
+  font-size: ${(props) => theme.font.sizes[props.fontSize || 'normal']};
 `;
