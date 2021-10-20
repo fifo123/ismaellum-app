@@ -8,10 +8,11 @@ import { setContext } from '@apollo/client/link/context';
 import { MuiThemeProvider } from '@material-ui/core';
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { UserProvider } from './src/Providers/UserProvider';
 import { Routes } from './src/routes';
 import { MaterialGlobal } from './src/shared/themes/global.theme';
 import GlobalStyles from './src/styles/GlobalStyles';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function App() {
   const httpLink = createHttpLink({
@@ -39,9 +40,11 @@ export default function App() {
     <>
       <ApolloProvider client={client}>
         <GlobalStyles />
-        <MuiThemeProvider theme={MaterialGlobal}>
-          <Routes />
-        </MuiThemeProvider>
+        <UserProvider>
+          <MuiThemeProvider theme={MaterialGlobal}>
+            <Routes />
+          </MuiThemeProvider>
+        </UserProvider>
         <ToastContainer />
       </ApolloProvider>
     </>
