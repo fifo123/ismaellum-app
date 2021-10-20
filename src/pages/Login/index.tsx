@@ -1,19 +1,20 @@
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { Box, Container, Grid } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { UiButton } from '../../components/atoms/Button';
-import { UiCover } from '../../components/atoms/Cover';
 import { UiPaper } from '../../components/atoms/Paper';
 import { UiTextField } from '../../components/atoms/TextField';
 import Haoc from '../../shared/assets/haoc.svg';
 import Logo from '../../shared/assets/logo.svg';
+import { UserModel } from '../../types/models/user.model';
+import { GET_USER } from '../Home/query/getUser';
 import { MAKE_LOGIN } from './query/login';
 
 export function Login() {
   const history = useHistory();
-  const [coverHidden, setCoverHidden] = useState(true);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -32,19 +33,28 @@ export function Login() {
     }
   };
 
+  const [getLoggedUser, getUserQuery] =
+    useLazyQuery<{ user: UserModel }>(GET_USER);
+
   useEffect(() => {
     if (error?.message === 'Error: User or password wrong') {
       toast.error('Email ou senha incorretos');
     }
     if (data?.login) {
-      localStorage.setItem('token', data?.login);
-      history.push('/home');
+      getLoggedUser();
     }
   }, [data, error]);
 
+  useEffect(() => {
+    if (getUserQuery.data?.user?.user_id) {
+      localStorage.setItem('token', data?.login);
+      localStorage.setItem('user', JSON.stringify(getUserQuery.data?.user));
+      history.push('/home');
+    }
+  }, [getUserQuery.data]);
+
   return (
     <>
-      <UiCover hidden={coverHidden} setHidden={setCoverHidden}></UiCover>
       <Container
         style={{
           display: 'flex',
