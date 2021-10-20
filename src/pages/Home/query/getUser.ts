@@ -13,6 +13,21 @@ export const GET_USER = gql`
         currentXp
         levelXp
       }
+      favoriteRooms {
+        favorite_room_id
+        room {
+          room_id
+          number
+          description
+          picture
+        }
+      }
+      lastRooms {
+        room_id
+        number
+        description
+        picture
+      }
     }
   }
 `;

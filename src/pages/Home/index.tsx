@@ -1,22 +1,24 @@
 import { useQuery } from '@apollo/client';
 import { Box } from '@material-ui/core';
-import LinearProgress, {
-  LinearProgressProps
-} from '@material-ui/core/LinearProgress';
-
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import io from 'socket.io-client';
-import { UiCover } from '../../components/atoms/Cover';
-import { Typography } from '../../components/atoms/Cover/styles';
+import { ProductItem } from '../../components/atoms/ProductItem';
+import { UiTypography } from '../../components/atoms/Typography';
+import { LinearProgressWithLabel } from '../../components/molecules/LinearProgressWithLabel';
+import { ListRooms } from '../../components/molecules/ListRooms';
+import { Header } from '../../components/templates/Header';
+import { NewNotificationCover } from '../../components/templates/NewNotificationCover';
+import Store from '../../shared/assets/store.svg';
 import { GET_USER } from './query/getUser';
 import { Layout } from './styles';
 
 const socket = io('http://localhost:3000');
 
 export function Home() {
-  const history = useHistory();
+  console.log('home');
 
+  const history = useHistory();
   const [name, setName] = useState('-');
   const [credits, setCredits] = useState(0);
   const [level, setLevel] = useState(0);
@@ -25,11 +27,13 @@ export function Home() {
   const [currentXp, setCurrentXp] = useState(0);
   const [userId, setUserId] = useState(0);
   const [coverHidden, setCoverHidden] = useState(true);
-
   const [moreXp, setMoreXp] = useState(0);
   const [moreCredits, setMoreCredits] = useState(0);
-
   const { data, error, refetch } = useQuery(GET_USER);
+
+  useEffect(() => {
+    refetch();
+  }, []);
 
   useEffect(() => {
     if (error?.message) {
@@ -47,8 +51,6 @@ export function Home() {
   }, [data, error]);
 
   useEffect(() => {
-    console.log(userId);
-
     if (userId) {
       socket.on(userId.toString(), (data) => {
         setMoreXp(data.totalXp);
@@ -61,59 +63,73 @@ export function Home() {
 
   return (
     <>
-      <UiCover
+      <NewNotificationCover
         hidden={coverHidden}
         setHidden={setCoverHidden}
         xpQuantity={moreXp}
         creditsQuantity={moreCredits}
-      ></UiCover>
-      <Layout display="flex" justifyContent="center" alignItems="center">
-        <Typography variant="h3" align="center" fontColor="#024959">
-          Olá, {name}.
-        </Typography>
-        <Typography variant="h3" align="center" fontColor="#024959">
-          Você está level: {level}
-        </Typography>
-        <Typography variant="h3" align="center" fontColor="#024959">
-          Você possui: {credits} créditos
-        </Typography>
-        <div style={{ width: '70%', marginTop: '20PX' }}>
-          {/* TotalXp: {totalXp}
-          levelXp: {levelXp}
-          percent: {(totalXp * 100) / levelXp} % */}
+      />
+      <Header />
+      <Box mb={4} />
+      <Layout display="flex">
+        <Box display="flex" width="100%" justifyContent="center">
+          <UiTypography variant="h5" fontColor="darkPrimary">
+            Bem-vindo, {name}!
+          </UiTypography>
+        </Box>
+        <Box mb={2} />
+        <div style={{ width: '100%' }}>
           <LinearProgressWithLabel
             value={(currentXp * 100) / 100}
             levelXp={levelXp}
             totalXp={totalXp}
           />
         </div>
+        <Box mb={3} />
+        <UiTypography variant="h5" fontColor="darkPrimary">
+          Você está level: {level}
+        </UiTypography>
+        <Box mb={1} />
+        <UiTypography variant="h5" fontColor="secondary">
+          Você possui: {credits} créditos.
+        </UiTypography>
+        <Box mb={1} />
+        <ProductItem
+          name={'Ir para a loja'}
+          image={Store}
+          onClickCard={() => history.push('/store')}
+          fullWidth
+        />
+        <Box mb={2} />
+        <ListRooms
+          category="Favoritos"
+          roomCards={
+            data?.user?.favoriteRooms?.map((favoriteRoom: any) => ({
+              image: `http://localhost:3000/get-image/?imagem=${favoriteRoom?.room?.picture}`,
+              name: `Sala ${favoriteRoom?.room?.number}`,
+              subtitle: favoriteRoom?.room?.description,
+              onClickCard: () => {
+                history.push(`/room/${favoriteRoom?.room?.room_id}`);
+              }
+            })) || []
+          }
+        />
+        <Box mb={2} />
+        <ListRooms
+          category="Histórico"
+          roomCards={
+            data?.user?.lastRooms?.map((lastRoom: any) => ({
+              image: `http://localhost:3000/get-image/?imagem=${lastRoom.picture}`,
+              name: `Sala ${lastRoom.number}`,
+              subtitle: lastRoom.description,
+              onClickCard: () => {
+                history.push(`/room/${lastRoom?.room_id}`);
+              }
+            })) || []
+          }
+        />
+        <Box mb={2} />
       </Layout>
     </>
-  );
-}
-
-function LinearProgressWithLabel(
-  props: LinearProgressProps & {
-    value: number;
-    levelXp: number;
-    totalXp: number;
-  }
-) {
-  return (
-    <Box display="flex" alignItems="center">
-      <Box minWidth={35} style={{ marginRight: '15px' }}>
-        <Typography variant="body2" color="textSecondary">{`${Math.round(
-          props.totalXp
-        )}XP`}</Typography>
-      </Box>
-      <Box width="100%" mr={1}>
-        <LinearProgress variant="determinate" {...props} />
-      </Box>
-      <Box minWidth={35}>
-        <Typography variant="body2" color="textSecondary">{`${Math.round(
-          props.levelXp
-        )}XP`}</Typography>
-      </Box>
-    </Box>
   );
 }
